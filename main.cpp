@@ -1,5 +1,7 @@
 #include <iostream>
 #include <omp.h>
+#include <cstdlib>
+#include <ctime>
 
 #define N 1000
 #define chunk 100
@@ -16,15 +18,18 @@ int main() {
     float a[N], b[N], c[N];
     int i;
 
-    // Inicializar arreglos
+    // Semilla para números aleatorios
+    srand(time(NULL));
+
+    // Inicializar arreglos con valores aleatorios
     for (i = 0; i < N; i++) {
-        a[i] = i * 10;
-        b[i] = (i + 3) * 3.7;
+        a[i] = rand() % 100;   // 0–99
+        b[i] = rand() % 100;
     }
 
     int pedazos = chunk;
 
-    // Suma paralela
+    // Suma paralela con OpenMP
     #pragma omp parallel for shared(a,b,c,pedazos) private(i) schedule(static,pedazos)
     for (i = 0; i < N; i++) {
         c[i] = a[i] + b[i];
@@ -37,7 +42,7 @@ int main() {
     cout << "Primeros " << mostrar << " valores de B:\n";
     imprimeArreglo(b);
 
-    cout << "Primeros " << mostrar << " valores de C:\n";
+    cout << "Primeros " << mostrar << " valores de C (A+B):\n";
     imprimeArreglo(c);
 
     return 0;
